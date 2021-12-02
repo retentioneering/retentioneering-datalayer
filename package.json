@@ -8,7 +8,9 @@
   "umd:main": "./dist/rete-datalayer.umd.js",
   "browser": "./dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE.md"
   ],
   "exports": {
     "import": "./dist/index.js",
