@@ -19,8 +19,8 @@ const reteDatalayer = getReteDataLayer()
 reteDatalayer.add({
   type: 'custom-event',
   name: 'my-event-name',
-  data: {
-    event_value: 'some stringified data',
+  data: { // some stringified data
+    some_property: 'some property',
   },
 })
 ```
