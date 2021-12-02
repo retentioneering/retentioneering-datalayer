@@ -38,10 +38,7 @@ test('handle event', () => {
   const event = mockEvent()
   const dispatchCustomEvent = jest.fn()
 
-  window.reteTracker = {
-    dispatchCustomEvent,
-  }
-
+  reteDatalayer.registerGlobalHandler(dispatchCustomEvent)
   reteDatalayer.add(event)
 
   const events = reteDatalayer.getEvents()
@@ -50,8 +47,7 @@ test('handle event', () => {
   expect(events).toEqual([event])
   expect(unhandledEvents).toEqual([])
   expect(dispatchCustomEvent).toBeCalledWith(event)
-
-  delete window.reteTracker
+  reteDatalayer.clearGlobalHandler()
 })
 
 test('clear', () => {

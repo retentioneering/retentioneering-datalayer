@@ -7,14 +7,14 @@
  */
 import { CustomEvent } from './types'
 
-type DispatchCustomEventParams = Omit<CustomEvent, 'type'>
+type Handler = (e: CustomEvent) => void
 
 declare global {
   interface Window {
     reteUnhandledEvents?: CustomEvent[],
     reteDatalayerEvents?: CustomEvent[],
     reteTracker?: {
-      dispatchCustomEvent?: (e: DispatchCustomEventParams) => void,
+      dispatchCustomEvent?: Handler,
     }
   }
 }
@@ -53,6 +53,14 @@ export const getReteDataLayer = () => {
     clear: () => {
       window.reteUnhandledEvents = []
       window.reteDatalayerEvents = []
+    },
+    registerGlobalHandler: (handler: Handler) => {
+      window.reteTracker = window.reteTracker || {}
+      window.reteTracker.dispatchCustomEvent = handler
+    },
+    clearGlobalHandler: () => {
+      window.reteTracker = window.reteTracker || {}
+      delete window.reteTracker.dispatchCustomEvent
     },
   }
 }
