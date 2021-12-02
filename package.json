@@ -23,8 +23,7 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint \"./**/*.{js,ts,tsx}\"",
     "lint:fix": "eslint \"./**/*.{js,ts,tsx}\" --fix",
-    "build": "npm run emit-dts && rollup -c rollup.config.js",
-    "publish": "npm run build && npm run publish"
+    "build": "npm run emit-dts && rollup -c rollup.config.js"
   },
   "author": "retentioneering",
   "license": "SEE LICENSE IN LICENSE.md",
