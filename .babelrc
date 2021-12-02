@@ -1,0 +1,33 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "shippedProposals": true,
+        "corejs": 3,
+        "modules": false,
+        "targets": {
+          "ie": "11",
+          "node": "current"
+        }
+      }
+    ],
+    "@babel/typescript"
+  ],
+  "env": {
+    "test": {
+      "plugins": [
+        "@babel/plugin-transform-modules-commonjs",
+        [
+          "module-resolver",
+          {
+            "alias": {
+              "@": "./src"
+            }
+          }
+        ]
+      ]
+    }
+  }
+}
