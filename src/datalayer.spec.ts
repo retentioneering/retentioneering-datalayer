@@ -5,11 +5,12 @@
  * By using, sharing or editing this code you agree with the License terms and conditions.
  * You can obtain License text at https://github.com/retentioneering/retentioneering-dom-observer/blob/master/LICENSE.md
  */
-import { getReteDataLayer } from './datalayer'
+import waitForExpect from 'wait-for-expect'
+import { getDatalayer } from './datalayer'
 import { CustomEvent } from './types'
 
 beforeEach(() => {
-  getReteDataLayer().clear()
+  getDatalayer().clear()
 })
 
 const mockEvent = (): CustomEvent => ({
@@ -21,71 +22,90 @@ const mockEvent = (): CustomEvent => ({
 })
 
 test('write & read', () => {
-  const reteDatalayer = getReteDataLayer()
+  const reteDatalayer = getDatalayer()
   const event = mockEvent()
-  reteDatalayer.add(event)
+  reteDatalayer.push(event)
 
   const events = reteDatalayer.getEvents()
-  const unhandledEvents = reteDatalayer.getUnhandledEvents()
 
   expect(events).toEqual([event])
-  expect(unhandledEvents).toEqual([event])
 })
 
 
-test('handle event', () => {
-  const reteDatalayer = getReteDataLayer()
+test('subscribe', async () => {
+  const reteDatalayer = getDatalayer()
   const event = mockEvent()
-  const dispatchCustomEvent = jest.fn()
+  const handler = jest.fn()
 
-  reteDatalayer.registerGlobalHandler(dispatchCustomEvent)
-  reteDatalayer.add(event)
+  const subs = reteDatalayer.createStream().subscribe(handler)
 
-  const events = reteDatalayer.getEvents()
-  const unhandledEvents = reteDatalayer.getUnhandledEvents()
+  reteDatalayer.push(event)
 
-  expect(events).toEqual([event])
-  expect(unhandledEvents).toEqual([])
-  expect(dispatchCustomEvent).toBeCalledWith(event)
-  reteDatalayer.clearGlobalHandler()
+  await waitForExpect(() => {
+    expect(handler).toHaveBeenCalledWith(event)
+    subs.unsubscribe()
+  })
 })
 
-test('clear', () => {
-  const reteDatalayer = getReteDataLayer()
-  const event = mockEvent()
 
-  reteDatalayer.add(event)
-  expect(reteDatalayer.getEvents()).toHaveLength(1)
-  expect(reteDatalayer.getUnhandledEvents()).toHaveLength(1)
-  reteDatalayer.clear()
-  expect(reteDatalayer.getEvents()).toHaveLength(0)
-  expect(reteDatalayer.getUnhandledEvents()).toHaveLength(0)
+test('subscribe with initial', async () => {
+  const reteDatalayer = getDatalayer()
+  const event = mockEvent()
+  const event2 = mockEvent()
+  const handler = jest.fn()
+
+  reteDatalayer.push(event)
+
+  const subs = reteDatalayer
+    .createStream({ emitInitial: true })
+    .subscribe(handler)
+
+
+  reteDatalayer
+    .createStream({ emitInitial: true })
+    .filter((event) => event.name === 'some-event')
+
+  reteDatalayer.push(event2)
+
+  await waitForExpect(() => {
+    expect(handler).toHaveBeenCalledTimes(2)
+    expect(handler.mock.calls).toEqual([[event], [event2]])
+    subs.unsubscribe()
+  })
 })
 
-test('clear unhandled events', () => {
-  const reteDatalayer = getReteDataLayer()
-  const event = mockEvent()
+test('two subs', async () => {
+  const reteDatalayer = getDatalayer()
+  const handler = jest.fn()
 
-  reteDatalayer.add(event)
-  expect(reteDatalayer.getEvents()).toHaveLength(1)
-  expect(reteDatalayer.getUnhandledEvents()).toHaveLength(1)
-  reteDatalayer.clearUnhandledEvents()
-  expect(reteDatalayer.getUnhandledEvents()).toHaveLength(0)
-  expect(reteDatalayer.getEvents()).toHaveLength(1)
+  const subs1 = reteDatalayer.createStream().subscribe(handler)
+  const subs2 = reteDatalayer.createStream().subscribe(handler)
+
+  reteDatalayer.push(mockEvent())
+  reteDatalayer.push(mockEvent())
+
+  await waitForExpect(() => {
+    expect(handler).toHaveBeenCalledTimes(4)
+    subs1.unsubscribe()
+    subs2.unsubscribe()
+  })
 })
 
-test('separate scripts', () => {
-  const event = mockEvent()
-  const reteDatalayer1 = getReteDataLayer()
-  const reteDatalayer2 = getReteDataLayer()
+test('singleton', async () => {
+  const reteDatalayer = getDatalayer()
+  const reteDatalayer2 = getDatalayer()
+  const handler = jest.fn()
 
-  reteDatalayer1.add(event)
+  const subs1 = reteDatalayer.createStream().subscribe(handler)
+  const subs2 = reteDatalayer2.createStream().subscribe(handler)
 
-  expect(reteDatalayer2.getEvents()).toEqual([event])
-  expect(reteDatalayer2.getEvents()).toEqual(reteDatalayer1.getEvents())
+  reteDatalayer.push(mockEvent())
+  reteDatalayer.push(mockEvent())
 
-  reteDatalayer1.clear()
-
-  expect(reteDatalayer1.getEvents()).toEqual([])
-  expect(reteDatalayer2.getEvents()).toEqual([])
+  await waitForExpect(() => {
+    expect(handler).toHaveBeenCalledTimes(4)
+    expect(reteDatalayer.getEvents()).toBe(reteDatalayer2.getEvents())
+    subs1.unsubscribe()
+    subs2.unsubscribe()
+  })
 })

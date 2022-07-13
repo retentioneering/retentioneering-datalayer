@@ -5,62 +5,71 @@
  * By using, sharing or editing this code you agree with the License terms and conditions.
  * You can obtain License text at https://github.com/retentioneering/retentioneering-dom-observer/blob/master/LICENSE.md
  */
+import Observable from 'zen-observable'
 import { CustomEvent } from './types'
+import { EventEmitter, createEventEmitter } from './event-emitter'
 
-type Handler = (e: CustomEvent) => void
+type CreateObservableParams = {
+  emitInitial?: boolean
+}
+
+export interface ReteDatalayer {
+  getEvents: () => CustomEvent[],
+  push: (event: CustomEvent) => void,
+  createStream: (params?: CreateObservableParams) => Observable<CustomEvent>,
+  emitter: EventEmitter<CustomEvent>,
+  clear: () => void,
+}
 
 declare global {
   interface Window {
-    reteUnhandledEvents?: CustomEvent[],
-    reteDatalayerEvents?: CustomEvent[],
-    reteTracker?: {
-      dispatchCustomEvent?: Handler,
-    }
+    reteDatalayer?: ReteDatalayer
+  }
+}
+
+const createDataLayer = (): ReteDatalayer => {
+  const events: CustomEvent[] = []
+  const emitter = createEventEmitter<CustomEvent>()
+
+  const push = (event: CustomEvent) => {
+    events.push(event)
+    emitter.emit(event)
+  }
+
+  const clear = () => {
+    events.splice(0, events.length)
+  }
+
+  const createStream = ({ emitInitial }: CreateObservableParams = {}) => {
+    return new Observable<CustomEvent>((observer) => {
+      if (emitInitial) {
+        for (const event of events) {
+          observer.next(event)
+        }
+      }
+
+      const onEvent = (event: CustomEvent) => {
+        observer.next(event)
+      }
+
+      emitter.addEventListener(onEvent)
+      return () => {
+        emitter.removeEventListener(onEvent)
+      }
+    })
+  }
+
+  return {
+    getEvents: () => events,
+    push,
+    createStream,
+    emitter,
+    clear,
   }
 }
 
 
-export const getReteDataLayer = () => {
-  const getUnhandledEvents = () => {
-    window.reteUnhandledEvents = window.reteUnhandledEvents || []
-    return window.reteUnhandledEvents
-  }
-
-  const getDatalayerEvents = () => {
-    window.reteDatalayerEvents = window.reteDatalayerEvents || []
-    return window.reteDatalayerEvents
-  }
-
-  return {
-    add: (event: CustomEvent) => {
-      if (typeof window?.reteTracker?.dispatchCustomEvent === 'function') {
-        if (event.type === 'custom-event') {
-          window.reteTracker.dispatchCustomEvent(event)
-        }
-      } else {
-        const unhandledEvents = getUnhandledEvents()
-        unhandledEvents.push(event)
-      }
-
-      const datalayerEvents = getDatalayerEvents()
-      datalayerEvents.push(event)
-    },
-    getEvents: () => getDatalayerEvents(),
-    getUnhandledEvents: () => getUnhandledEvents(),
-    clearUnhandledEvents: () => {
-      window.reteUnhandledEvents = []
-    },
-    clear: () => {
-      window.reteUnhandledEvents = []
-      window.reteDatalayerEvents = []
-    },
-    registerGlobalHandler: (handler: Handler) => {
-      window.reteTracker = window.reteTracker || {}
-      window.reteTracker.dispatchCustomEvent = handler
-    },
-    clearGlobalHandler: () => {
-      window.reteTracker = window.reteTracker || {}
-      delete window.reteTracker.dispatchCustomEvent
-    },
-  }
+export const getDatalayer = () => {
+  window.reteDatalayer = window.reteDatalayer || createDataLayer()
+  return window.reteDatalayer
 }

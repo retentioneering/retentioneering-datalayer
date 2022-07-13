@@ -7,10 +7,10 @@
         "shippedProposals": true,
         "corejs": 3,
         "modules": false,
-        "targets": {
-          "ie": "11",
-          "node": "current"
-        }
+        "targets": [
+          "> 1%",
+          "last 2 versions"
+        ]
       }
     ],
     "@babel/typescript"
