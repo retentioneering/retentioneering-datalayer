@@ -18,7 +18,7 @@
   },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "emit-dts": "dts-bundle-generator --project tsconfig.declarations.json --out-file ./dist/index.d.ts ./src/index.ts",
+    "emit-dts": "dts-bundle-generator --project tsconfig.declarations.json --out-file ./dist/index.d.ts ./src/index.ts --external-inlines=zen-observable",
     "test": "jest",
     "clear-jest": "jest --clearCache",
     "test:watch": "jest --watchAll",
