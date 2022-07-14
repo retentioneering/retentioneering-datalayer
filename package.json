@@ -18,7 +18,7 @@
   },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "emit-dts": "dts-bundle-generator --project tsconfig.declarations.json --out-file ./dist/index.d.ts ./src/index.ts --external-inlines=zen-observable",
+    "emit-dts": "dts-bundle-generator --project tsconfig.declarations.json --out-file ./dist/index.d.ts ./src/index.ts",
     "test": "jest",
     "clear-jest": "jest --clearCache",
     "test:watch": "jest --watchAll",
@@ -67,7 +67,8 @@
     "typescript": "^4.2.2",
     "wait-for-expect": "^3.0.2"
   },
-  "dependencies": {
+  "dependencies": {},
+  "peerDependencies": {
     "zen-observable": "^0.8.15"
   }
 }

@@ -4,8 +4,19 @@ This package provides access to the retentioneering datalayer. With the package 
 
 # Install 
 
+install package:
 ```
 npm install @retentioneering/datalayer
+```
+
+install peers dependencies:
+```
+npm install zen-observable
+```
+
+Also, if you are using typescript you should install types for zen-observable:
+```
+npm install @types/zen-observable --save-dev
 ```
 
 # Usage

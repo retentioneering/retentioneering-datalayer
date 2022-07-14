@@ -8,6 +8,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import pkg from './package.json'
 
 export default {
+  external: ['zen-observable'],
   input: './src/index.ts',
   output: [
     {
@@ -25,12 +26,18 @@ export default {
       format: 'umd',
       sourcemap: true,
       name: 'ReteDatalayer',
+      globals: {
+        'zen-observable': 'Observable',
+      },
     },
     {
       file: './dist/rete-datalayer.iife.js',
       format: 'iife',
       name: 'ReteDatalayer',
       sourcemap: true,
+      globals: {
+        'zen-observable': 'Observable',
+      },
     },
   ],
   plugins: [
