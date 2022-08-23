@@ -7,4 +7,5 @@
  */
 export type { CustomEvent } from './types'
 export type { ReteDatalayer } from './datalayer'
+export { Observable } from './observable'
 export { getDatalayer } from './datalayer'

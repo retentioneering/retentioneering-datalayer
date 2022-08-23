@@ -18,7 +18,7 @@
   },
   "types": "./dist/index.d.ts",
   "scripts": {
-    "emit-dts": "dts-bundle-generator --project tsconfig.declarations.json --out-file ./dist/index.d.ts ./src/index.ts",
+    "emit-dts": "dts-bundle-generator --inline-declare-global --project tsconfig.declarations.json --out-file ./dist/index.d.ts ./src/index.ts",
     "test": "jest",
     "clear-jest": "jest --clearCache",
     "test:watch": "jest --watchAll",
@@ -49,7 +49,6 @@
     "@testing-library/dom": "^8.11.1",
     "@testing-library/jest-dom": "^5.15.1",
     "@types/jest": "^27.0.3",
-    "@types/zen-observable": "^0.8.3",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
     "babel-jest": "^27.4.2",
@@ -65,8 +64,5 @@
     "rollup-plugin-terser": "^7.0.2",
     "typescript": "^4.5.3",
     "wait-for-expect": "^3.0.2"
-  },
-  "peerDependencies": {
-    "zen-observable": "^0.8.15"
   }
 }

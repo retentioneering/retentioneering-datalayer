@@ -5,7 +5,7 @@
  * By using, sharing or editing this code you agree with the License terms and conditions.
  * You can obtain License text at https://github.com/retentioneering/retentioneering-dom-observer/blob/master/LICENSE.md
  */
-import Observable from 'zen-observable'
+import { Observable } from './observable'
 import { CustomEvent } from './types'
 import { EventEmitter, createEventEmitter } from './event-emitter'
 
@@ -67,7 +67,6 @@ const createDataLayer = (): ReteDatalayer => {
     clear,
   }
 }
-
 
 export const getDatalayer = () => {
   window.reteDatalayer = window.reteDatalayer || createDataLayer()
