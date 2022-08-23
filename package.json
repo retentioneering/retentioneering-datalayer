@@ -1,6 +1,6 @@
 {
   "name": "@retentioneering/datalayer",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "datalayer for retentioneering analytics framework",
   "main": "./dist/rete-datalayer.cjs.js",
   "jsnext:main": "./dist/index.js",
